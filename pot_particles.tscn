@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://idwfpr0ed3s8"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_xfiyp"]
+load_path = "res://.godot/imported/pot_piece.png-cf5f45037d546cde7804ab2adbd8b9ba.ctex"
+
+[node name="PotParticles" type="CPUParticles2D"]
+emitting = false
+one_shot = true
+explosiveness = 1.0
+texture = SubResource("CompressedTexture2D_xfiyp")
+spread = 180.0
+gravity = Vector2(0, 80)
+initial_velocity_min = 36.08
+initial_velocity_max = 46.39
