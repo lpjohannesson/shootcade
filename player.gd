@@ -2,6 +2,7 @@ extends CharacterBody2D
 
 const STAND_SPEED := 100.0
 const CROUCH_SPEED := 60.0
+const BULLET_OFFSET := 4.0
 
 const GROUND_ACCEL := 800.0
 const AIR_ACCEL := 400.0
@@ -22,9 +23,9 @@ const GRAVITY := 400.0
 
 @export var crouch_area: Area2D
 
-@export var bullet_forward: Node2D
-@export var bullet_up: Node2D
-@export var bullet_down: Node2D
+@export var bullet_forward: RayCast2D
+@export var bullet_up: RayCast2D
+@export var bullet_down: RayCast2D
 
 @export var top_forward_texture: Texture2D
 @export var top_up_texture: Texture2D
@@ -142,21 +143,28 @@ func try_fire() -> void:
 	var bullet: Bullet = bullet_scene.instantiate()
 	get_parent().add_child(bullet)
 	
-	var bullet_point: Node2D
+	var bullet_cast: RayCast2D
 	
 	match aim_direction.y:
 		0.0:
-			bullet_point = bullet_forward
+			bullet_cast = bullet_forward
 		-1.0:
-			bullet_point = bullet_up
+			bullet_cast = bullet_up
 		1.0:
-			bullet_point = bullet_down
-	
-	bullet.global_position = bullet_point.global_position
+			bullet_cast = bullet_down
 	
 	var shoot_direction := get_shoot_direction()
+	
 	bullet.velocity = shoot_direction * Bullet.BULLET_SPEED
 	bullet.rotation = shoot_direction.angle()
+	
+	if bullet_cast.is_colliding():
+		bullet.global_position = bullet_cast.get_collision_point()
+	else:
+		bullet.global_position = bullet_cast.to_global(
+			bullet_cast.target_position - shoot_direction * BULLET_OFFSET)
+	
+	bullet.query.exclude = [self]
 	
 	shoot_sound.play()
 
@@ -209,9 +217,6 @@ func get_can_stand() -> bool:
 	return true
 
 func _physics_process(delta: float) -> void:
-	if Input.is_action_just_pressed("pause"):
-		get_tree().reload_current_scene()
-	
 	input_direction = Input.get_vector(
 		"move_left",
 		"move_right",
@@ -225,3 +230,6 @@ func _physics_process(delta: float) -> void:
 	try_fire()
 	move(delta)
 	animate()
+	
+	if Input.is_action_just_pressed("pause"):
+		get_tree().reload_current_scene()

@@ -1,20 +1,13 @@
-[gd_scene load_steps=5 format=3 uid="uid://cq2lnfhplj7kg"]
+[gd_scene load_steps=4 format=3 uid="uid://cq2lnfhplj7kg"]
 
 [ext_resource type="Script" path="res://bullet.gd" id="1_ewf0j"]
-[ext_resource type="Texture2D" uid="uid://k7qviec4xmme" path="res://bullet.png" id="1_hs78u"]
+[ext_resource type="Texture2D" uid="uid://k7qviec4xmme" path="res://textures/bullet.png" id="1_hs78u"]
 [ext_resource type="PackedScene" uid="uid://cn2of67t2v71y" path="res://bullet_boom.tscn" id="2_1ommn"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_rih36"]
-size = Vector2(2, 2)
-
-[node name="Bullet" type="CharacterBody2D"]
-collision_layer = 0
+[node name="Bullet" type="Node2D"]
 script = ExtResource("1_ewf0j")
 boom_scene = ExtResource("2_1ommn")
 colors = PackedColorArray(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("RectangleShape2D_rih36")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("1_hs78u")

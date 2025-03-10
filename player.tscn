@@ -1,10 +1,10 @@
-[gd_scene load_steps=23 format=3 uid="uid://20uaaet6k10k"]
+[gd_scene load_steps=21 format=3 uid="uid://20uaaet6k10k"]
 
-[ext_resource type="Texture2D" uid="uid://clvxlub5v1gnt" path="res://player_bottom.png" id="1_0a4eh"]
+[ext_resource type="Texture2D" uid="uid://clvxlub5v1gnt" path="res://textures/player/bottom.png" id="1_0a4eh"]
 [ext_resource type="Script" path="res://player.gd" id="1_2vo06"]
-[ext_resource type="Texture2D" uid="uid://koefyu2eos23" path="res://top_forward.png" id="2_jgut4"]
-[ext_resource type="Texture2D" uid="uid://d0twpc18l1hym" path="res://top_up.png" id="3_ixh3b"]
-[ext_resource type="Texture2D" uid="uid://cc0pki30rsb4t" path="res://top_down.png" id="4_6s4y1"]
+[ext_resource type="Texture2D" uid="uid://koefyu2eos23" path="res://textures/player/top_forward.png" id="2_jgut4"]
+[ext_resource type="Texture2D" uid="uid://d0twpc18l1hym" path="res://textures/player/top_up.png" id="3_ixh3b"]
+[ext_resource type="Texture2D" uid="uid://cc0pki30rsb4t" path="res://textures/player/top_down.png" id="4_6s4y1"]
 [ext_resource type="PackedScene" uid="uid://cq2lnfhplj7kg" path="res://bullet.tscn" id="5_8gswa"]
 [ext_resource type="AudioStream" uid="uid://dwxtcnsee31u8" path="res://sounds/jump.wav" id="7_wk343"]
 [ext_resource type="AudioStream" uid="uid://2v1cxdxfj7sn" path="res://sounds/shoot.wav" id="8_08r3a"]
@@ -16,21 +16,6 @@ height = 21.0
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_l4g63"]
 radius = 3.0
 height = 15.0
-
-[sub_resource type="Animation" id="Animation_qc4x5"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprites/TopSprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [1]
-}
 
 [sub_resource type="Animation" id="Animation_b3t1p"]
 resource_name = "idle"
@@ -68,36 +53,8 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_es8sc"]
 _data = {
-"RESET": SubResource("Animation_qc4x5"),
 "idle": SubResource("Animation_b3t1p"),
 "shoot": SubResource("Animation_klu6j")
-}
-
-[sub_resource type="Animation" id="Animation_vej3q"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprites/TopSprite:position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(0, -16)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Sprites/BottomSprite:frame")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [2]
 }
 
 [sub_resource type="Animation" id="Animation_64ekx"]
@@ -278,7 +235,6 @@ tracks/1/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_p0lcn"]
 _data = {
-"RESET": SubResource("Animation_vej3q"),
 "crawl": SubResource("Animation_64ekx"),
 "crouch": SubResource("Animation_gbqpq"),
 "fall": SubResource("Animation_wl6v5"),
@@ -288,7 +244,6 @@ _data = {
 }
 
 [node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("sprites", "top_sprite", "bottom_sprite", "top_animator", "bottom_animator", "stand_collider", "crouch_collider", "crouch_area", "bullet_forward", "bullet_up", "bullet_down", "jump_timer", "coyote_timer", "jump_sound", "shoot_sound")]
-collision_layer = 2
 script = ExtResource("1_2vo06")
 sprites = NodePath("Sprites")
 top_sprite = NodePath("Sprites/TopSprite")
@@ -316,22 +271,25 @@ bullet_scene = ExtResource("5_8gswa")
 position = Vector2(0, -16)
 texture = ExtResource("1_0a4eh")
 hframes = 10
-frame = 2
+frame = 7
 
 [node name="TopSprite" type="Sprite2D" parent="Sprites"]
-position = Vector2(0, -16)
-texture = ExtResource("2_jgut4")
+position = Vector2(0, -10)
+texture = ExtResource("4_6s4y1")
 hframes = 3
 frame = 1
 
-[node name="BulletForward" type="Node2D" parent="Sprites/TopSprite"]
-position = Vector2(15, -2)
+[node name="BulletForward" type="RayCast2D" parent="Sprites/TopSprite"]
+position = Vector2(0, -2.5)
+target_position = Vector2(21, 0)
 
-[node name="BulletUp" type="Node2D" parent="Sprites/TopSprite"]
-position = Vector2(-2, -13)
+[node name="BulletUp" type="RayCast2D" parent="Sprites/TopSprite"]
+position = Vector2(-2.5, 0)
+target_position = Vector2(0, -19)
 
-[node name="BulletDown" type="Node2D" parent="Sprites/TopSprite"]
-position = Vector2(2, 14)
+[node name="BulletDown" type="RayCast2D" parent="Sprites/TopSprite"]
+position = Vector2(2.5, 0)
+target_position = Vector2(0, 20)
 
 [node name="StandCollider" type="CollisionShape2D" parent="."]
 position = Vector2(0, -10.5)
@@ -358,11 +316,6 @@ autoplay = "stand"
 [node name="StandCollider2" type="CollisionShape2D" parent="CrouchArea"]
 position = Vector2(0, -10.5)
 shape = SubResource("CapsuleShape2D_f17td")
-
-[node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(0, -14)
-enabled = false
-zoom = Vector2(2, 2)
 
 [node name="JumpTimer" type="Timer" parent="."]
 wait_time = 0.1

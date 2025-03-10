@@ -1,10 +1,13 @@
-extends CharacterBody2D
+extends Node2D
 class_name Bullet
 
 const BULLET_SPEED := 200.0
 
 @export var boom_scene: PackedScene
 @export var colors: PackedColorArray
+
+var velocity := Vector2.ZERO
+var query := PhysicsRayQueryParameters2D.new()
 
 func choose_color() -> Color:
 	return colors[randi_range(0, colors.size() - 1)]
@@ -20,25 +23,24 @@ func stop_bullet() -> void:
 
 func _ready() -> void:
 	modulate = choose_color()
+	
+	query.hit_from_inside = true
 
 func _physics_process(delta: float) -> void:
-	if test_move(transform, Vector2.ZERO):
+	var next_position := global_position + velocity * delta
+	
+	query.from = global_position
+	query.to = next_position
+	
+	var space_state := get_world_2d().direct_space_state
+	var result := space_state.intersect_ray(query)
+	
+	if not result.is_empty():
+		global_position = result.position
 		stop_bullet()
 		return
 	
-	move_and_slide()
-	
-	if get_slide_collision_count() > 0:
-		for i in range(get_slide_collision_count()):
-			var collision = get_slide_collision(i)
-			
-			if not collision.get_collider() is StaticBody2D:
-				continue
-			
-			collision.get_collider().queue_free()
-		
-		stop_bullet()
-		return
+	global_position = next_position
 
 func _on_color_timer_timeout() -> void:
 	modulate = choose_color()
