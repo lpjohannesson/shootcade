@@ -3,6 +3,9 @@ extends CharacterBody2D
 const STAND_SPEED := 100.0
 const CROUCH_SPEED := 60.0
 const BULLET_OFFSET := 4.0
+const THROW_FORCE := 150.0
+const THROW_UP_FORCE := 50.0
+const THROW_FOLLOW := 0.75
 
 const GROUND_ACCEL := 800.0
 const AIR_ACCEL := 400.0
@@ -22,10 +25,14 @@ const GRAVITY := 400.0
 @export var crouch_collider: CollisionShape2D
 
 @export var crouch_area: Area2D
+@export var pickup_area: Area2D
 
 @export var bullet_forward: RayCast2D
 @export var bullet_up: RayCast2D
 @export var bullet_down: RayCast2D
+
+@export var throw_point: Node2D
+@export var item_origin: Node2D
 
 @export var top_forward_texture: Texture2D
 @export var top_up_texture: Texture2D
@@ -35,7 +42,9 @@ const GRAVITY := 400.0
 @export var coyote_timer: Timer
 
 @export var jump_sound: AudioStreamPlayer2D
-@export var shoot_sound: AudioStreamPlayer2D
+@export var fire_sound: AudioStreamPlayer2D
+@export var pickup_sound: AudioStreamPlayer2D
+@export var throw_sound: AudioStreamPlayer2D
 
 @export var bullet_scene: PackedScene
 
@@ -46,6 +55,8 @@ var crouching := false
 var jump_stopped := false
 var can_stand := false
 
+var held_item: Item
+
 func aim() -> void:
 	if Input.is_action_pressed("lock_aim"):
 		return
@@ -54,6 +65,8 @@ func aim() -> void:
 		aim_direction.x = input_direction.x
 	
 	aim_direction.y = input_direction.y
+	
+	sprites.scale.x = aim_direction.x
 
 func crouch() -> void:
 	if not can_stand:
@@ -162,11 +175,62 @@ func try_fire() -> void:
 		bullet.global_position = bullet_cast.get_collision_point()
 	else:
 		bullet.global_position = bullet_cast.to_global(
-			bullet_cast.target_position - shoot_direction * BULLET_OFFSET)
+			bullet_cast.target_position - bullet_cast.target_position.normalized() * BULLET_OFFSET)
 	
 	bullet.query.exclude = [self]
 	
-	shoot_sound.play()
+	fire_sound.play()
+
+func pickup_item(item: Item) -> void:
+	held_item = item
+	item.get_parent().remove_child(item)
+	
+	item_origin.add_child(item)
+	
+	if item.visible_when_held:
+		item.position = Vector2.ZERO
+		item.sprite.rotation = 0.0
+		item.process_mode = Node.PROCESS_MODE_DISABLED
+	else:
+		item.visible = false
+	
+	pickup_sound.play()
+
+func throw_item() -> void:
+	item_origin.remove_child(held_item)
+	get_parent().add_child(held_item)
+	
+	held_item.process_mode = Node.PROCESS_MODE_INHERIT
+	held_item.visible = true
+	
+	held_item.global_position = throw_point.global_position
+	
+	if aim_direction.y == 1.0 and is_on_floor():
+		held_item.velocity = Vector2.ZERO
+	else:
+		held_item.velocity = velocity * THROW_FOLLOW + get_shoot_direction() * THROW_FORCE
+	
+	if not crouching and aim_direction.y != 1.0:
+		held_item.velocity.y -= THROW_UP_FORCE
+	
+	held_item = null
+	
+	throw_sound.play()
+
+func try_pickup_items() -> void:
+	if not Input.is_action_just_pressed("pickup"):
+		return
+	
+	if held_item != null:
+		throw_item()
+		return
+	
+	for area in pickup_area.get_overlapping_areas():
+		if not area is ItemArea:
+			continue
+		
+		pickup_item(area.item)
+		break
 
 func animate_top() -> void:
 	match aim_direction.y:
@@ -178,8 +242,18 @@ func animate_top() -> void:
 			top_sprite.texture = top_down_texture
 	
 	if Input.is_action_just_pressed("fire"):
-		top_animator.play("shoot")
-		top_animator.queue("idle")
+		top_animator.play("fire")
+	
+	if top_animator.current_animation == "fire":
+		return
+	
+	if held_item == null:
+		top_animator.play("idle")
+	else:
+		if held_item.visible_when_held:
+			top_animator.play("idle")
+		else:
+			top_animator.play("gun_idle")
 
 func animate_bottom() -> void:
 	if is_on_floor():
@@ -200,8 +274,6 @@ func animate_bottom() -> void:
 			bottom_animator.play("fall")
 
 func animate() -> void:
-	sprites.scale.x = aim_direction.x
-	
 	animate_top()
 	animate_bottom()
 
@@ -227,6 +299,7 @@ func _physics_process(delta: float) -> void:
 	
 	aim()
 	crouch()
+	try_pickup_items()
 	try_fire()
 	move(delta)
 	animate()

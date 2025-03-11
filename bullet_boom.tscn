@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://cn2of67t2v71y"]
 
 [ext_resource type="Texture2D" uid="uid://dv0tmtip8ln80" path="res://textures/bullet_boom.png" id="1_symaw"]
-[ext_resource type="AudioStream" uid="uid://ctfvrxrrxm0f3" path="res://sounds/hit.wav" id="2_8qp7v"]
+[ext_resource type="AudioStream" uid="uid://ctfvrxrrxm0f3" path="res://sounds/bump.wav" id="2_8qp7v"]
 
 [sub_resource type="Animation" id="Animation_q1676"]
 resource_name = "boom"

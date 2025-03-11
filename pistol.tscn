@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://buoyoar8uo4au"]
+
+[ext_resource type="PackedScene" uid="uid://405dhrnat8il" path="res://item.tscn" id="1_w4oo0"]
+[ext_resource type="Texture2D" uid="uid://miv2l07md1hg" path="res://textures/pistol.png" id="2_8jqs5"]
+
+[node name="Pistol" instance=ExtResource("1_w4oo0")]
+visible_when_held = false
+
+[node name="Sprite2D" parent="." index="1"]
+texture = ExtResource("2_8jqs5")

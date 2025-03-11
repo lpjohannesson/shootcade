@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://20uaaet6k10k"]
+[gd_scene load_steps=26 format=3 uid="uid://20uaaet6k10k"]
 
 [ext_resource type="Texture2D" uid="uid://clvxlub5v1gnt" path="res://textures/player/bottom.png" id="1_0a4eh"]
 [ext_resource type="Script" path="res://player.gd" id="1_2vo06"]
@@ -7,7 +7,9 @@
 [ext_resource type="Texture2D" uid="uid://cc0pki30rsb4t" path="res://textures/player/top_down.png" id="4_6s4y1"]
 [ext_resource type="PackedScene" uid="uid://cq2lnfhplj7kg" path="res://bullet.tscn" id="5_8gswa"]
 [ext_resource type="AudioStream" uid="uid://dwxtcnsee31u8" path="res://sounds/jump.wav" id="7_wk343"]
-[ext_resource type="AudioStream" uid="uid://2v1cxdxfj7sn" path="res://sounds/shoot.wav" id="8_08r3a"]
+[ext_resource type="AudioStream" uid="uid://2v1cxdxfj7sn" path="res://sounds/fire.wav" id="8_08r3a"]
+[ext_resource type="AudioStream" uid="uid://dqlq5hbxjrvqp" path="res://sounds/throw.wav" id="9_g3bc2"]
+[ext_resource type="AudioStream" uid="uid://bsbl6w4n0bts0" path="res://sounds/pickup.wav" id="10_8qryq"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_f17td"]
 radius = 3.0
@@ -16,6 +18,40 @@ height = 21.0
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_l4g63"]
 radius = 3.0
 height = 15.0
+
+[sub_resource type="Animation" id="Animation_klu6j"]
+resource_name = "fire"
+length = 0.2
+step = 0.05
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprites/TopSprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.15),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [2, 3]
+}
+
+[sub_resource type="Animation" id="Animation_vtwwx"]
+resource_name = "gun_idle"
+length = 0.001
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprites/TopSprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
 
 [sub_resource type="Animation" id="Animation_b3t1p"]
 resource_name = "idle"
@@ -34,27 +70,11 @@ tracks/0/keys = {
 "values": [0]
 }
 
-[sub_resource type="Animation" id="Animation_klu6j"]
-resource_name = "shoot"
-length = 0.2
-step = 0.05
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprites/TopSprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.15),
-"transitions": PackedFloat32Array(1, 1),
-"update": 1,
-"values": [1, 2]
-}
-
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_es8sc"]
 _data = {
-"idle": SubResource("Animation_b3t1p"),
-"shoot": SubResource("Animation_klu6j")
+"fire": SubResource("Animation_klu6j"),
+"gun_idle": SubResource("Animation_vtwwx"),
+"idle": SubResource("Animation_b3t1p")
 }
 
 [sub_resource type="Animation" id="Animation_64ekx"]
@@ -243,7 +263,16 @@ _data = {
 "walk": SubResource("Animation_3yoe3")
 }
 
-[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("sprites", "top_sprite", "bottom_sprite", "top_animator", "bottom_animator", "stand_collider", "crouch_collider", "crouch_area", "bullet_forward", "bullet_up", "bullet_down", "jump_timer", "coyote_timer", "jump_sound", "shoot_sound")]
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_iq7u5"]
+radius = 2.0
+height = 19.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_fpmrc"]
+radius = 5.0
+height = 25.0
+
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("sprites", "top_sprite", "bottom_sprite", "top_animator", "bottom_animator", "stand_collider", "crouch_collider", "crouch_area", "pickup_area", "bullet_forward", "bullet_up", "bullet_down", "throw_point", "item_origin", "jump_timer", "coyote_timer", "jump_sound", "fire_sound", "pickup_sound", "throw_sound")]
+collision_layer = 0
 script = ExtResource("1_2vo06")
 sprites = NodePath("Sprites")
 top_sprite = NodePath("Sprites/TopSprite")
@@ -253,16 +282,21 @@ bottom_animator = NodePath("BottomAnimator")
 stand_collider = NodePath("StandCollider")
 crouch_collider = NodePath("CrouchCollider")
 crouch_area = NodePath("CrouchArea")
+pickup_area = NodePath("PickupArea")
 bullet_forward = NodePath("Sprites/TopSprite/BulletForward")
 bullet_up = NodePath("Sprites/TopSprite/BulletUp")
 bullet_down = NodePath("Sprites/TopSprite/BulletDown")
+throw_point = NodePath("Sprites/TopSprite/ThrowPoint")
+item_origin = NodePath("Sprites/TopSprite/ItemOrigin")
 top_forward_texture = ExtResource("2_jgut4")
 top_up_texture = ExtResource("3_ixh3b")
 top_down_texture = ExtResource("4_6s4y1")
 jump_timer = NodePath("JumpTimer")
 coyote_timer = NodePath("CoyoteTimer")
 jump_sound = NodePath("Sounds/Jump")
-shoot_sound = NodePath("Sounds/Shoot")
+fire_sound = NodePath("Sounds/Fire")
+pickup_sound = NodePath("Sounds/Pickup")
+throw_sound = NodePath("Sounds/Throw")
 bullet_scene = ExtResource("5_8gswa")
 
 [node name="Sprites" type="Node2D" parent="."]
@@ -275,9 +309,8 @@ frame = 7
 
 [node name="TopSprite" type="Sprite2D" parent="Sprites"]
 position = Vector2(0, -10)
-texture = ExtResource("4_6s4y1")
-hframes = 3
-frame = 1
+texture = ExtResource("2_jgut4")
+hframes = 4
 
 [node name="BulletForward" type="RayCast2D" parent="Sprites/TopSprite"]
 position = Vector2(0, -2.5)
@@ -290,6 +323,12 @@ target_position = Vector2(0, -19)
 [node name="BulletDown" type="RayCast2D" parent="Sprites/TopSprite"]
 position = Vector2(2.5, 0)
 target_position = Vector2(0, 20)
+
+[node name="ThrowPoint" type="Node2D" parent="Sprites/TopSprite"]
+position = Vector2(0, -2.5)
+
+[node name="ItemOrigin" type="Node2D" parent="Sprites/TopSprite"]
+position = Vector2(-3, 0)
 
 [node name="StandCollider" type="CollisionShape2D" parent="."]
 position = Vector2(0, -10.5)
@@ -315,7 +354,13 @@ autoplay = "stand"
 
 [node name="StandCollider2" type="CollisionShape2D" parent="CrouchArea"]
 position = Vector2(0, -10.5)
-shape = SubResource("CapsuleShape2D_f17td")
+shape = SubResource("CapsuleShape2D_iq7u5")
+
+[node name="PickupArea" type="Area2D" parent="."]
+
+[node name="StandCollider2" type="CollisionShape2D" parent="PickupArea"]
+position = Vector2(0, -10.5)
+shape = SubResource("CapsuleShape2D_fpmrc")
 
 [node name="JumpTimer" type="Timer" parent="."]
 wait_time = 0.1
@@ -330,5 +375,11 @@ one_shot = true
 [node name="Jump" type="AudioStreamPlayer2D" parent="Sounds"]
 stream = ExtResource("7_wk343")
 
-[node name="Shoot" type="AudioStreamPlayer2D" parent="Sounds"]
+[node name="Fire" type="AudioStreamPlayer2D" parent="Sounds"]
 stream = ExtResource("8_08r3a")
+
+[node name="Pickup" type="AudioStreamPlayer2D" parent="Sounds"]
+stream = ExtResource("10_8qryq")
+
+[node name="Throw" type="AudioStreamPlayer2D" parent="Sounds"]
+stream = ExtResource("9_g3bc2")
