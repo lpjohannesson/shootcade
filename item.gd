@@ -13,6 +13,9 @@ const BOUNCE := 0.5
 @export var bump_sound: AudioStreamPlayer2D
 @export var bump_timer: Timer
 
+func use_item(_player: Player):
+	pass
+
 func _physics_process(delta: float) -> void:
 	velocity.y += GRAVITY * delta
 	
@@ -32,5 +35,3 @@ func _physics_process(delta: float) -> void:
 			bump_sound.play()
 		
 		bump_timer.start()
-		
-		break

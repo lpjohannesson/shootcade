@@ -1,4 +1,5 @@
 extends CharacterBody2D
+class_name Player
 
 const STAND_SPEED := 100.0
 const CROUCH_SPEED := 60.0
@@ -31,7 +32,9 @@ const GRAVITY := 400.0
 @export var bullet_up: RayCast2D
 @export var bullet_down: RayCast2D
 
-@export var throw_point: Node2D
+@export var throw_up_point: Node2D
+@export var throw_down_point: Node2D
+
 @export var item_origin: Node2D
 
 @export var top_forward_texture: Texture2D
@@ -45,8 +48,6 @@ const GRAVITY := 400.0
 @export var fire_sound: AudioStreamPlayer2D
 @export var pickup_sound: AudioStreamPlayer2D
 @export var throw_sound: AudioStreamPlayer2D
-
-@export var bullet_scene: PackedScene
 
 var input_direction := Vector2.ZERO
 var aim_direction := Vector2.RIGHT
@@ -143,16 +144,16 @@ func move(delta: float) -> void:
 	
 	move_and_slide()
 
+func punch() -> void:
+	top_animator.play("punch")
+
 func get_shoot_direction() -> Vector2:
 	if aim_direction.y == 0.0:
 		return Vector2(aim_direction.x, 0.0)
 	else:
 		return Vector2(0.0, aim_direction.y)
 
-func try_fire() -> void:
-	if not Input.is_action_just_pressed("fire"):
-		return
-	
+func fire_bullet(bullet_scene: PackedScene):
 	var bullet: Bullet = bullet_scene.instantiate()
 	get_parent().add_child(bullet)
 	
@@ -180,19 +181,30 @@ func try_fire() -> void:
 	bullet.query.exclude = [self]
 	
 	fire_sound.play()
+	top_animator.play("fire")
+
+func try_fire() -> void:
+	if not Input.is_action_just_pressed("fire"):
+		return
+	
+	if held_item == null:
+		punch()
+	else:
+		held_item.use_item(self)
 
 func pickup_item(item: Item) -> void:
 	held_item = item
 	item.get_parent().remove_child(item)
 	
 	item_origin.add_child(item)
+	item.sprite.rotation = 0.0
 	
 	if item.visible_when_held:
 		item.position = Vector2.ZERO
-		item.sprite.rotation = 0.0
-		item.process_mode = Node.PROCESS_MODE_DISABLED
 	else:
 		item.visible = false
+	
+	item.process_mode = Node.PROCESS_MODE_DISABLED
 	
 	pickup_sound.play()
 
@@ -203,7 +215,10 @@ func throw_item() -> void:
 	held_item.process_mode = Node.PROCESS_MODE_INHERIT
 	held_item.visible = true
 	
-	held_item.global_position = throw_point.global_position
+	if aim_direction.y == 1.0:
+		held_item.global_position = throw_down_point.global_position
+	else:
+		held_item.global_position = throw_up_point.global_position
 	
 	if aim_direction.y == 1.0 and is_on_floor():
 		held_item.velocity = Vector2.ZERO
@@ -216,6 +231,7 @@ func throw_item() -> void:
 	held_item = null
 	
 	throw_sound.play()
+	top_animator.play("throw")
 
 func try_pickup_items() -> void:
 	if not Input.is_action_just_pressed("pickup"):
@@ -241,17 +257,14 @@ func animate_top() -> void:
 		1.0:
 			top_sprite.texture = top_down_texture
 	
-	if Input.is_action_just_pressed("fire"):
-		top_animator.play("fire")
-	
-	if top_animator.current_animation == "fire":
+	if top_animator.current_animation in ["fire", "throw", "punch"]:
 		return
 	
 	if held_item == null:
 		top_animator.play("idle")
 	else:
 		if held_item.visible_when_held:
-			top_animator.play("idle")
+			top_animator.play("hold")
 		else:
 			top_animator.play("gun_idle")
 

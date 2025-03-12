@@ -4,9 +4,9 @@
 
 [node name="PotParticles" type="CPUParticles2D"]
 emitting = false
+texture = SubResource("CompressedTexture2D_xfiyp")
 one_shot = true
 explosiveness = 1.0
-texture = SubResource("CompressedTexture2D_xfiyp")
 spread = 180.0
 gravity = Vector2(0, 80)
 initial_velocity_min = 36.08

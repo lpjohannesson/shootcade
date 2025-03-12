@@ -1,9 +1,13 @@
-[gd_scene load_steps=3 format=3 uid="uid://buoyoar8uo4au"]
+[gd_scene load_steps=5 format=3 uid="uid://buoyoar8uo4au"]
 
 [ext_resource type="PackedScene" uid="uid://405dhrnat8il" path="res://item.tscn" id="1_w4oo0"]
+[ext_resource type="Script" uid="uid://383oypaulk1o" path="res://pistol.gd" id="2_6e3nq"]
 [ext_resource type="Texture2D" uid="uid://miv2l07md1hg" path="res://textures/pistol.png" id="2_8jqs5"]
+[ext_resource type="PackedScene" uid="uid://cq2lnfhplj7kg" path="res://bullet.tscn" id="3_646vd"]
 
 [node name="Pistol" instance=ExtResource("1_w4oo0")]
+script = ExtResource("2_6e3nq")
+bullet_scene = ExtResource("3_646vd")
 visible_when_held = false
 
 [node name="Sprite2D" parent="." index="1"]
