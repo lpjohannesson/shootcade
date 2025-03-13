@@ -1,14 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://405dhrnat8il"]
+[gd_scene load_steps=6 format=3 uid="uid://405dhrnat8il"]
 
 [ext_resource type="Script" uid="uid://dt7faeequo580" path="res://item.gd" id="1_f41cu"]
-[ext_resource type="Script" uid="uid://i26llrd3eimh" path="res://item_area.gd" id="2_et1bm"]
 [ext_resource type="AudioStream" uid="uid://ctfvrxrrxm0f3" path="res://sounds/bump.wav" id="3_ogrhh"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_3tq5e"]
 radius = 3.0
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_b60q0"]
-radius = 8.0
 
 [sub_resource type="Animation" id="Animation_pvlhy"]
 resource_name = "spin"
@@ -34,7 +30,7 @@ _data = {
 }
 
 [node name="Item" type="CharacterBody2D" node_paths=PackedStringArray("animation_player", "sprite", "bump_sound", "bump_timer")]
-collision_layer = 0
+collision_layer = 2
 script = ExtResource("1_f41cu")
 animation_player = NodePath("AnimationPlayer")
 sprite = NodePath("Sprite2D")
@@ -45,13 +41,6 @@ bump_timer = NodePath("BumpTimer")
 shape = SubResource("CircleShape2D_3tq5e")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-
-[node name="ItemArea" type="Area2D" parent="." node_paths=PackedStringArray("item")]
-script = ExtResource("2_et1bm")
-item = NodePath("..")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ItemArea"]
-shape = SubResource("CircleShape2D_b60q0")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {

@@ -1,14 +1,128 @@
-[gd_scene load_steps=28 format=3 uid="uid://20uaaet6k10k"]
+[gd_scene load_steps=35 format=3 uid="uid://20uaaet6k10k"]
 
 [ext_resource type="Texture2D" uid="uid://clvxlub5v1gnt" path="res://textures/player/bottom.png" id="1_0a4eh"]
 [ext_resource type="Script" uid="uid://30bd6p8sad5h" path="res://player.gd" id="1_2vo06"]
 [ext_resource type="Texture2D" uid="uid://koefyu2eos23" path="res://textures/player/top_forward.png" id="2_jgut4"]
 [ext_resource type="Texture2D" uid="uid://d0twpc18l1hym" path="res://textures/player/top_up.png" id="3_ixh3b"]
 [ext_resource type="Texture2D" uid="uid://cc0pki30rsb4t" path="res://textures/player/top_down.png" id="4_6s4y1"]
+[ext_resource type="PackedScene" uid="uid://brmvd5s7wgoc6" path="res://punch_effect.tscn" id="5_n7ghd"]
 [ext_resource type="AudioStream" uid="uid://dwxtcnsee31u8" path="res://sounds/jump.wav" id="7_wk343"]
 [ext_resource type="AudioStream" uid="uid://2v1cxdxfj7sn" path="res://sounds/fire.wav" id="8_08r3a"]
 [ext_resource type="AudioStream" uid="uid://dqlq5hbxjrvqp" path="res://sounds/throw.wav" id="9_g3bc2"]
 [ext_resource type="AudioStream" uid="uid://bsbl6w4n0bts0" path="res://sounds/pickup.wav" id="10_8qryq"]
+
+[sub_resource type="Animation" id="Animation_ivps1"]
+resource_name = "up"
+length = 0.001
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprites/TopSprite:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("3_ixh3b")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprites/TopSprite/PunchArea:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-1, -6)]
+}
+
+[sub_resource type="Animation" id="Animation_urp6f"]
+resource_name = "forward"
+length = 0.001
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprites/TopSprite:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("2_jgut4")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprites/TopSprite/PunchArea:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(8, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_606se"]
+resource_name = "down"
+length = 0.001
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprites/TopSprite:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("4_6s4y1")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprites/TopSprite/PunchArea:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-2, 8)]
+}
+
+[sub_resource type="Animation" id="Animation_bwjto"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprites/TopSprite/PunchArea:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-1, -11)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_u1c27"]
+_data = {
+&"RESET": SubResource("Animation_bwjto"),
+&"down": SubResource("Animation_606se"),
+&"forward": SubResource("Animation_urp6f"),
+&"up": SubResource("Animation_ivps1")
+}
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_606se"]
+radius = 9.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_f17td"]
 radius = 3.0
@@ -52,40 +166,6 @@ tracks/0/keys = {
 "values": [6]
 }
 
-[sub_resource type="Animation" id="Animation_b3t1p"]
-resource_name = "idle"
-length = 0.001
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprites/TopSprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [0]
-}
-
-[sub_resource type="Animation" id="Animation_n7ghd"]
-resource_name = "throw"
-length = 0.2
-step = 0.05
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprites/TopSprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.15),
-"transitions": PackedFloat32Array(1, 1),
-"update": 1,
-"values": [4, 5]
-}
-
 [sub_resource type="Animation" id="Animation_nvl01"]
 resource_name = "hold"
 length = 0.001
@@ -103,6 +183,23 @@ tracks/0/keys = {
 "values": [3]
 }
 
+[sub_resource type="Animation" id="Animation_b3t1p"]
+resource_name = "idle"
+length = 0.001
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprites/TopSprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
 [sub_resource type="Animation" id="Animation_b26j0"]
 resource_name = "punch"
 length = 0.2
@@ -118,6 +215,23 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1, 1),
 "update": 1,
 "values": [1, 2]
+}
+
+[sub_resource type="Animation" id="Animation_n7ghd"]
+resource_name = "throw"
+length = 0.2
+step = 0.05
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprites/TopSprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.15),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [4, 5]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_es8sc"]
@@ -321,10 +435,10 @@ radius = 2.0
 height = 19.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_fpmrc"]
-radius = 5.0
-height = 25.0
+radius = 9.0
+height = 33.0
 
-[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("sprites", "top_sprite", "bottom_sprite", "top_animator", "bottom_animator", "stand_collider", "crouch_collider", "crouch_area", "pickup_area", "bullet_forward", "bullet_up", "bullet_down", "throw_up_point", "throw_down_point", "item_origin", "jump_timer", "coyote_timer", "jump_sound", "fire_sound", "pickup_sound", "throw_sound")]
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("sprites", "top_sprite", "bottom_sprite", "top_animator", "bottom_animator", "aim_animator", "stand_collider", "crouch_collider", "crouch_area", "pickup_area", "punch_area", "bullet_forward", "bullet_up", "bullet_down", "throw_up_point", "throw_down_point", "item_origin", "jump_timer", "coyote_timer", "punch_timer", "pickup_timer", "jump_sound", "fire_sound", "pickup_sound", "throw_sound")]
 collision_layer = 0
 script = ExtResource("1_2vo06")
 sprites = NodePath("Sprites")
@@ -332,10 +446,12 @@ top_sprite = NodePath("Sprites/TopSprite")
 bottom_sprite = NodePath("Sprites/BottomSprite")
 top_animator = NodePath("TopAnimator")
 bottom_animator = NodePath("BottomAnimator")
+aim_animator = NodePath("AimAnimator")
 stand_collider = NodePath("StandCollider")
 crouch_collider = NodePath("CrouchCollider")
 crouch_area = NodePath("CrouchArea")
 pickup_area = NodePath("PickupArea")
+punch_area = NodePath("Sprites/TopSprite/PunchArea")
 bullet_forward = NodePath("Sprites/TopSprite/BulletForward")
 bullet_up = NodePath("Sprites/TopSprite/BulletUp")
 bullet_down = NodePath("Sprites/TopSprite/BulletDown")
@@ -347,10 +463,19 @@ top_up_texture = ExtResource("3_ixh3b")
 top_down_texture = ExtResource("4_6s4y1")
 jump_timer = NodePath("JumpTimer")
 coyote_timer = NodePath("CoyoteTimer")
+punch_timer = NodePath("PunchTimer")
+pickup_timer = NodePath("PickupTimer")
 jump_sound = NodePath("Sounds/Jump")
 fire_sound = NodePath("Sounds/Fire")
 pickup_sound = NodePath("Sounds/Pickup")
 throw_sound = NodePath("Sounds/Throw")
+punch_effect_scene = ExtResource("5_n7ghd")
+
+[node name="AimAnimator" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_u1c27")
+}
+autoplay = "forward"
 
 [node name="Sprites" type="Node2D" parent="."]
 
@@ -361,9 +486,9 @@ hframes = 10
 
 [node name="TopSprite" type="Sprite2D" parent="Sprites"]
 position = Vector2(0, -16)
-texture = ExtResource("3_ixh3b")
+texture = ExtResource("4_6s4y1")
 hframes = 9
-frame = 6
+frame = 1
 
 [node name="BulletForward" type="RayCast2D" parent="Sprites/TopSprite"]
 position = Vector2(0, -2.5)
@@ -387,6 +512,11 @@ position = Vector2(1, 5)
 position = Vector2(-3, -4)
 
 [node name="PunchArea" type="Area2D" parent="Sprites/TopSprite"]
+position = Vector2(-1, -11)
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sprites/TopSprite/PunchArea"]
+shape = SubResource("CircleShape2D_606se")
 
 [node name="StandCollider" type="CollisionShape2D" parent="."]
 position = Vector2(0, -10.5)
@@ -415,6 +545,7 @@ position = Vector2(0, -10.5)
 shape = SubResource("CapsuleShape2D_iq7u5")
 
 [node name="PickupArea" type="Area2D" parent="."]
+collision_mask = 3
 
 [node name="StandCollider2" type="CollisionShape2D" parent="PickupArea"]
 position = Vector2(0, -10.5)
@@ -425,6 +556,14 @@ wait_time = 0.1
 one_shot = true
 
 [node name="CoyoteTimer" type="Timer" parent="."]
+wait_time = 0.1
+one_shot = true
+
+[node name="PunchTimer" type="Timer" parent="."]
+wait_time = 0.1
+one_shot = true
+
+[node name="PickupTimer" type="Timer" parent="."]
 wait_time = 0.1
 one_shot = true
 

@@ -15,6 +15,10 @@ run/main_scene="res://node_2d.tscn"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[autoload]
+
+ColorRandomizer="*res://color_randomizer.tscn"
+
 [display]
 
 window/size/viewport_width=640
@@ -22,7 +26,6 @@ window/size/viewport_height=360
 window/size/window_width_override=1280
 window/size/window_height_override=720
 window/stretch/mode="canvas_items"
-window/stretch/scale_mode="integer"
 
 [input]
 
@@ -84,6 +87,7 @@ pickup={
 [layer_names]
 
 2d_physics/layer_1="World"
+2d_physics/layer_2="Items"
 
 [rendering]
 

@@ -4,8 +4,7 @@ class_name Player
 const STAND_SPEED := 100.0
 const CROUCH_SPEED := 60.0
 const BULLET_OFFSET := 4.0
-const THROW_FORCE := 150.0
-const THROW_UP_FORCE := 50.0
+const THROW_FORCE := Vector2(150.0, 50.0)
 const THROW_FOLLOW := 0.75
 
 const GROUND_ACCEL := 800.0
@@ -21,12 +20,14 @@ const GRAVITY := 400.0
 
 @export var top_animator: AnimationPlayer
 @export var bottom_animator: AnimationPlayer
+@export var aim_animator: AnimationPlayer
 
 @export var stand_collider: CollisionShape2D
 @export var crouch_collider: CollisionShape2D
 
 @export var crouch_area: Area2D
 @export var pickup_area: Area2D
+@export var punch_area: Area2D
 
 @export var bullet_forward: RayCast2D
 @export var bullet_up: RayCast2D
@@ -43,11 +44,15 @@ const GRAVITY := 400.0
 
 @export var jump_timer: Timer
 @export var coyote_timer: Timer
+@export var punch_timer: Timer
+@export var pickup_timer: Timer
 
 @export var jump_sound: AudioStreamPlayer2D
 @export var fire_sound: AudioStreamPlayer2D
 @export var pickup_sound: AudioStreamPlayer2D
 @export var throw_sound: AudioStreamPlayer2D
+
+@export var punch_effect_scene: PackedScene
 
 var input_direction := Vector2.ZERO
 var aim_direction := Vector2.RIGHT
@@ -144,7 +149,32 @@ func move(delta: float) -> void:
 	
 	move_and_slide()
 
-func punch() -> void:
+func try_punch() -> void:
+	if Input.is_action_just_pressed("fire"):
+		punch_timer.start()
+		pickup_sound.play()
+	
+	if punch_timer.is_stopped():
+		return
+	
+	var punch_hit := false
+	
+	for body in punch_area.get_overlapping_bodies():
+		if not body is Item:
+			continue
+		
+		punch_hit = true
+		
+		body.velocity = get_throw_velocity(true)
+		
+		var effect: PunchEffect = punch_effect_scene.instantiate()
+		get_parent().add_child(effect)
+		effect.global_position = body.global_position
+	
+	if punch_hit:
+		punch_timer.stop()
+		fire_sound.play()
+	
 	top_animator.play("punch")
 
 func get_shoot_direction() -> Vector2:
@@ -183,16 +213,16 @@ func fire_bullet(bullet_scene: PackedScene):
 	fire_sound.play()
 	top_animator.play("fire")
 
-func try_fire() -> void:
+func try_use_item() -> void:
 	if not Input.is_action_just_pressed("fire"):
 		return
 	
-	if held_item == null:
-		punch()
-	else:
-		held_item.use_item(self)
+	held_item.use_item(self)
 
 func pickup_item(item: Item) -> void:
+	pickup_timer.stop()
+	punch_timer.stop()
+	
 	held_item = item
 	item.get_parent().remove_child(item)
 	
@@ -208,6 +238,20 @@ func pickup_item(item: Item) -> void:
 	
 	pickup_sound.play()
 
+func get_throw_velocity(up_on_side: bool) -> Vector2:
+	if aim_direction.y == 1.0 and is_on_floor():
+		return Vector2.ZERO
+	else:
+		var throw_velocity := velocity * THROW_FOLLOW + get_shoot_direction() * THROW_FORCE.x
+		
+		if aim_direction.y == 1.0:
+			return throw_velocity
+		
+		if not crouching or (up_on_side and aim_direction.y == 0.0):
+			throw_velocity.y -= THROW_FORCE.y
+		
+		return throw_velocity
+
 func throw_item() -> void:
 	item_origin.remove_child(held_item)
 	get_parent().add_child(held_item)
@@ -220,42 +264,41 @@ func throw_item() -> void:
 	else:
 		held_item.global_position = throw_up_point.global_position
 	
-	if aim_direction.y == 1.0 and is_on_floor():
-		held_item.velocity = Vector2.ZERO
-	else:
-		held_item.velocity = velocity * THROW_FOLLOW + get_shoot_direction() * THROW_FORCE
-	
-	if not crouching and aim_direction.y != 1.0:
-		held_item.velocity.y -= THROW_UP_FORCE
+	held_item.velocity = get_throw_velocity(false)
 	
 	held_item = null
 	
 	throw_sound.play()
 	top_animator.play("throw")
 
-func try_pickup_items() -> void:
+func try_pickup_item() -> void:
+	if Input.is_action_just_pressed("pickup"):
+		pickup_timer.start()
+	
+	if pickup_timer.is_stopped():
+		return
+	
+	for body in pickup_area.get_overlapping_bodies():
+		if not body is Item:
+			continue
+		
+		pickup_item(body)
+		break
+
+func try_throw_item() -> void:
 	if not Input.is_action_just_pressed("pickup"):
 		return
 	
-	if held_item != null:
-		throw_item()
-		return
-	
-	for area in pickup_area.get_overlapping_areas():
-		if not area is ItemArea:
-			continue
-		
-		pickup_item(area.item)
-		break
+	throw_item()
 
 func animate_top() -> void:
 	match aim_direction.y:
 		0.0:
-			top_sprite.texture = top_forward_texture
+			aim_animator.play("forward")
 		-1.0:
-			top_sprite.texture = top_up_texture
+			aim_animator.play("up")
 		1.0:
-			top_sprite.texture = top_down_texture
+			aim_animator.play("down")
 	
 	if top_animator.current_animation in ["fire", "throw", "punch"]:
 		return
@@ -312,8 +355,14 @@ func _physics_process(delta: float) -> void:
 	
 	aim()
 	crouch()
-	try_pickup_items()
-	try_fire()
+	
+	if held_item == null:
+		try_punch()
+		try_pickup_item()
+	else:
+		try_use_item()
+		try_throw_item()
+	
 	move(delta)
 	animate()
 	
