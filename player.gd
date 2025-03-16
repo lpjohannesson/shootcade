@@ -33,8 +33,7 @@ const GRAVITY := 400.0
 @export var bullet_up: RayCast2D
 @export var bullet_down: RayCast2D
 
-@export var throw_up_point: Node2D
-@export var throw_down_point: Node2D
+@export var throw_point: Node2D
 
 @export var item_origin: Node2D
 
@@ -259,11 +258,7 @@ func throw_item() -> void:
 	held_item.process_mode = Node.PROCESS_MODE_INHERIT
 	held_item.visible = true
 	
-	if aim_direction.y == 1.0:
-		held_item.global_position = throw_down_point.global_position
-	else:
-		held_item.global_position = throw_up_point.global_position
-	
+	held_item.global_position = throw_point.global_position
 	held_item.velocity = get_throw_velocity(false)
 	
 	held_item = null

@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3 uid="uid://20uaaet6k10k"]
+[gd_scene load_steps=34 format=3 uid="uid://20uaaet6k10k"]
 
 [ext_resource type="Texture2D" uid="uid://clvxlub5v1gnt" path="res://textures/player/bottom.png" id="1_0a4eh"]
 [ext_resource type="Script" uid="uid://30bd6p8sad5h" path="res://player.gd" id="1_2vo06"]
@@ -11,8 +11,8 @@
 [ext_resource type="AudioStream" uid="uid://dqlq5hbxjrvqp" path="res://sounds/throw.wav" id="9_g3bc2"]
 [ext_resource type="AudioStream" uid="uid://bsbl6w4n0bts0" path="res://sounds/pickup.wav" id="10_8qryq"]
 
-[sub_resource type="Animation" id="Animation_ivps1"]
-resource_name = "up"
+[sub_resource type="Animation" id="Animation_606se"]
+resource_name = "down"
 length = 0.001
 loop_mode = 1
 tracks/0/type = "value"
@@ -25,7 +25,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [ExtResource("3_ixh3b")]
+"values": [ExtResource("4_6s4y1")]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -37,7 +37,19 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(-1, -6)]
+"values": [Vector2(0, 8)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprites/TopSprite/ThrowPoint:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 5)]
 }
 
 [sub_resource type="Animation" id="Animation_urp6f"]
@@ -66,11 +78,23 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(8, 1)]
+"values": [Vector2(7, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprites/TopSprite/ThrowPoint:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, -2)]
 }
 
-[sub_resource type="Animation" id="Animation_606se"]
-resource_name = "down"
+[sub_resource type="Animation" id="Animation_ivps1"]
+resource_name = "up"
 length = 0.001
 loop_mode = 1
 tracks/0/type = "value"
@@ -83,7 +107,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [ExtResource("4_6s4y1")]
+"values": [ExtResource("3_ixh3b")]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -95,34 +119,30 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(-2, 8)]
+"values": [Vector2(-1, -7)]
 }
-
-[sub_resource type="Animation" id="Animation_bwjto"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprites/TopSprite/PunchArea:position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprites/TopSprite/ThrowPoint:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(-1, -11)]
+"values": [Vector2(0, -2)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_u1c27"]
 _data = {
-&"RESET": SubResource("Animation_bwjto"),
 &"down": SubResource("Animation_606se"),
 &"forward": SubResource("Animation_urp6f"),
 &"up": SubResource("Animation_ivps1")
 }
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_606se"]
-radius = 9.0
+radius = 6.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_f17td"]
 radius = 3.0
@@ -438,7 +458,7 @@ height = 19.0
 radius = 9.0
 height = 33.0
 
-[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("sprites", "top_sprite", "bottom_sprite", "top_animator", "bottom_animator", "aim_animator", "stand_collider", "crouch_collider", "crouch_area", "pickup_area", "punch_area", "bullet_forward", "bullet_up", "bullet_down", "throw_up_point", "throw_down_point", "item_origin", "jump_timer", "coyote_timer", "punch_timer", "pickup_timer", "jump_sound", "fire_sound", "pickup_sound", "throw_sound")]
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("sprites", "top_sprite", "bottom_sprite", "top_animator", "bottom_animator", "aim_animator", "stand_collider", "crouch_collider", "crouch_area", "pickup_area", "punch_area", "bullet_forward", "bullet_up", "bullet_down", "throw_point", "item_origin", "jump_timer", "coyote_timer", "punch_timer", "pickup_timer", "jump_sound", "fire_sound", "pickup_sound", "throw_sound")]
 collision_layer = 0
 script = ExtResource("1_2vo06")
 sprites = NodePath("Sprites")
@@ -455,8 +475,7 @@ punch_area = NodePath("Sprites/TopSprite/PunchArea")
 bullet_forward = NodePath("Sprites/TopSprite/BulletForward")
 bullet_up = NodePath("Sprites/TopSprite/BulletUp")
 bullet_down = NodePath("Sprites/TopSprite/BulletDown")
-throw_up_point = NodePath("Sprites/TopSprite/ThrowUpPoint")
-throw_down_point = NodePath("Sprites/TopSprite/ThrowDownPoint")
+throw_point = NodePath("Sprites/TopSprite/ThrowPoint")
 item_origin = NodePath("Sprites/TopSprite/ItemOrigin")
 top_forward_texture = ExtResource("2_jgut4")
 top_up_texture = ExtResource("3_ixh3b")
@@ -488,7 +507,7 @@ hframes = 10
 position = Vector2(0, -16)
 texture = ExtResource("4_6s4y1")
 hframes = 9
-frame = 1
+frame = 7
 
 [node name="BulletForward" type="RayCast2D" parent="Sprites/TopSprite"]
 position = Vector2(0, -2.5)
@@ -502,17 +521,14 @@ target_position = Vector2(0, -20)
 position = Vector2(2, 0)
 target_position = Vector2(0, 20)
 
-[node name="ThrowUpPoint" type="Node2D" parent="Sprites/TopSprite"]
-position = Vector2(1, -2)
-
-[node name="ThrowDownPoint" type="Node2D" parent="Sprites/TopSprite"]
-position = Vector2(1, 5)
+[node name="ThrowPoint" type="Node2D" parent="Sprites/TopSprite"]
+position = Vector2(0, 5)
 
 [node name="ItemOrigin" type="Node2D" parent="Sprites/TopSprite"]
 position = Vector2(-3, -4)
 
 [node name="PunchArea" type="Area2D" parent="Sprites/TopSprite"]
-position = Vector2(-1, -11)
+position = Vector2(0, 8)
 collision_mask = 3
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sprites/TopSprite/PunchArea"]
